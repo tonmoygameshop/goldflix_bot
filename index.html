@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOLDFLIX - Premium Movie Downloads</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --gold-primary: #FFD700;
+            --gold-secondary: #D4AF37;
+            --gold-dark: #B8860B;
+            --dark-bg: #0F0F0F;
+            --dark-card: #1A1A1A;
+            --text-light: #FFFFFF;
+            --text-gray: #AAAAAA;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-light);
+            padding-bottom: 70px;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(to bottom, rgba(0,0,0,0.9), rgba(0,0,0,0.5));
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--gold-primary);
+        }
+        
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--gold-primary);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            animation: glow 2s infinite alternate;
+        }
+        
+        .nav-bottom {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.7));
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            border-top: 1px solid var(--gold-secondary);
+            z-index: 100;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-gray);
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item i {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        
+        .nav-item.active {
+            color: var(--gold-primary);
+            transform: translateY(-5px);
+        }
+        
+        .nav-item:hover {
+            color: var(--gold-primary);
+            transform: translateY(-5px);
+            cursor: pointer;
+        }
+        
+        .page {
+            display: none;
+            padding: 20px;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .category {
+            margin-bottom: 30px;
+        }
+        
+        .category-title {
+            font-family: 'Playfair Display', serif;
+            color: var(--gold-primary);
+            font-size: 22px;
+            margin-bottom: 15px;
+            padding-left: 10px;
+            border-left: 4px solid var(--gold-primary);
+            display: flex;
+            align-items: center;
+        }
+        
+        .category-title i {
+            margin-right: 10px;
+        }
+        
+        .movie-box {
+            background: var(--dark-card);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        @media (min-width: 768px) {
+            .movie-box {
+                flex-direction: row;
+            }
+            
+            .movie-image {
+                width: 35%;
+            }
+            
+            .movie-content {
+                width: 65%;
+            }
+        }
+        
+        .movie-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.2);
+        }
+        
+        .movie-image {
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+            width: 100%;
+            aspect-ratio: 4 / 6;   
+            height: auto;          
+        }
+
+          .movie-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .movie-box:hover .movie-image img {
+            transform: scale(1.05);
+        }
+        
+        .movie-content {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            flex-grow: 1;
+        }
+        
+        .movie-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 18px;
+            color: var(--gold-primary);
+            margin-bottom: 5px;
+        }
+        
+        .movie-info {
+            color: var(--text-gray);
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .rating {
+            color: var(--gold-primary);
+            margin: 10px 0;
+        }
+        
+        .rating i {
+            margin-right: 2px;
+        }
+        
+        .download-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn {
+            background: linear-gradient(to right, var(--gold-dark), var(--gold-primary));
+            color: var(--dark-bg);
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .btn i {
+            margin-right: 5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+        }
+        
+        .social-icons {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 90;
+        }
+        
+        .social-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(to bottom, var(--gold-primary), var(--gold-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark-bg);
+            font-size: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+        
+        .social-icon:hover {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        .adult-warning {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-gray);
+        }
+        
+        .adult-warning i {
+            font-size: 50px;
+            color: var(--gold-primary);
+            margin-bottom: 20px;
+        }
+        
+        .adult-warning h2 {
+            color: var(--gold-primary);
+            margin-bottom: 15px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 5px var(--gold-primary); }
+            to { text-shadow: 0 0 20px var(--gold-primary), 0 0 30px var(--gold-secondary); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .star-rating {
+            direction: rtl;
+            display: inline-block;
+        }
+        
+        .star-rating input {
+            display: none;
+        }
+        
+        .star-rating label {
+            color: #444;
+            font-size: 18px;
+            padding: 0 2px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .star-rating input:checked ~ label,
+        .star-rating label:hover,
+        .star-rating label:hover ~ label {
+            color: var(--gold-primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">
+            <i class="fas fa-crown"></i>
+            GOLDFLIX
+        </div>
+    </div>
+    
+    <!-- Pages -->
+    <div class="page active" id="home">
+        <div class="category">
+            <h2 class="category-title"><i class="fas fa-fire"></i> Top List</h2>
+            <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://i.ibb.co.com/Y7G69TJH/photo-2025-09-10-10-27-42.jpg" alt="The One Man">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">The One Man</h3>
+                    <p class="movie-info">2025 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-top-5-star" name="home-top-rating" value="5">
+                            <label for="home-top-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-4-star" name="home-top-rating" value="4">
+                            <label for="home-top-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-3-star" name="home-top-rating" value="3">
+                            <label for="home-top-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-2-star" name="home-top-rating" value="2">
+                            <label for="home-top-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-1-star" name="home-top-rating" value="1">
+                            <label for="home-top-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://via.placeholder.com/300x450/0F0F0F/D4AF37?text=Golden+Eye" alt="Golden Eye">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">Golden Eye</h3>
+                    <p class="movie-info">2024 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-top2-5-star" name="home-top2-rating" value="5">
+                            <label for="home-top2-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-4-star" name="home-top2-rating" value="4">
+                            <label for="home-top2-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-3-star" name="home-top2-rating" value="3">
+                            <label for="home-top2-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-2-star" name="home-top2-rating" value="2">
+                            <label for="home-top2-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-1-star" name="home-top2-rating" value="1">
+                            <label for="home-top2-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="category">
+            <h2 class="category-title"><i class="fas fa-star"></i> New List</h2>
+            <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://via.placeholder.com/300x450/0F0F0F/D4AF37?text=Gold+Rush" alt="Gold Rush">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">Gold Rush</h3>
+                    <p class="movie-info">2025 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-new-5-star" name="home-new-rating" value="5">
+                            <label for="home-new-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-new-4-star" name="home-new-rating" value="4">
+                            <label for="home-new-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-new-3-star" name="home-new-rating" value="3">
+                            <label for="home-new-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-new-2-star" name="home-new-rating" value="2">
+                            <label for="home-new-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-new-1-star" name="home-new-rating" value="1">
+                            <label for="home-new-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://via.placeholder.com/300x450/0F0F0F/D4AF37?text=Royal+Blood" alt="Royal Blood">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">Royal Blood</h3>
+                    <p class="movie-info">2024 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-new2-5-star" name="home-new2-rating" value="5">
+                            <label for="home-new2-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-new2-4-star" name="home-new2-rating" value="4">
+                            <label for="home-new2-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-new2-3-star" name="home-new2-rating" value="3">
+                            <label for="home-new2-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-new2-2-star" name="home-new2-rating" value="2">
+                            <label for="home-new2-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-new2-1-star" name="home-new2-rating" value="1">
+                            <label for="home-new2-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="category">
+            <h2 class="category-title"><i class="fas fa-history"></i> Old List</h2>
+            <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://via.placeholder.com/300x450/0F0F0F/D4AF37?text=Classic+Gold" alt="Classic Gold">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">Classic Gold</h3>
+                    <p class="movie-info">1999 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-old-5-star" name="home-old-rating" value="5">
+                            <label for="home-old-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-old-4-star" name="home-old-rating" value="4">
+                            <label for="home-old-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-old-3-star" name="home-old-rating" value="3">
+                            <label for="home-old-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-old-2-star" name="home-old-rating" value="2">
+                            <label for="home-old-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-old-1-star" name="home-old-rating" value="1">
+                            <label for="home-old-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://via.placeholder.com/300x450/0F0F0F/D4AF37?text=Vintage+Treasure" alt="Vintage Treasure">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">Vintage Treasure</h3>
+                    <p class="movie-info">1985 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-old2-5-star" name="home-old2-rating" value="5">
+                            <label for="home-old2-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-old2-4-star" name="home-old2-rating" value="4">
+                            <label for="home-old2-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-old2-3-star" name="home-old2-rating" value="3">
+                            <label for="home-old2-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-old2-2-star" name="home-old2-rating" value="2">
+                            <label for="home-old2-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-old2-1-star" name="home-old2-rating" value="1">
+                            <label for="home-old2-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="page" id="hollywood">
+        <div class="category">
+            <h2 class="category-title"><i class="fas fa-film"></i>Hollywood - Top List</h2>
+            <!-- Hollywood content would go here, same structure as home page -->
+            <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://via.placeholder.com/300x450/0F0F0F/D4AF37?text=The+One+Man" alt="The One Man">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">The One Man</h3>
+                    <p class="movie-info">2025 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-top-5-star" name="home-top-rating" value="5">
+                            <label for="home-top-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-4-star" name="home-top-rating" value="4">
+                            <label for="home-top-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-3-star" name="home-top-rating" value="3">
+                            <label for="home-top-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-2-star" name="home-top-rating" value="2">
+                            <label for="home-top-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-1-star" name="home-top-rating" value="1">
+                            <label for="home-top-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/tghw1fuzbn?key=fd32ec5d4f2beb144f2b3d350b659ce4', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/tghw1fuzbn?key=fd32ec5d4f2beb144f2b3d350b659ce4', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/tghw1fuzbn?key=fd32ec5d4f2beb144f2b3d350b659ce4', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/tghw1fuzbn?key=fd32ec5d4f2beb144f2b3d350b659ce4', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://via.placeholder.com/300x450/0F0F0F/D4AF37?text=Golden+Eye" alt="Golden Eye">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">Golden Eye</h3>
+                    <p class="movie-info">2024 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-top2-5-star" name="home-top2-rating" value="5">
+                            <label for="home-top2-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-4-star" name="home-top2-rating" value="4">
+                            <label for="home-top2-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-3-star" name="home-top2-rating" value="3">
+                            <label for="home-top2-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-2-star" name="home-top2-rating" value="2">
+                            <label for="home-top2-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-1-star" name="home-top2-rating" value="1">
+                            <label for="home-top2-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/tghw1fuzbn?key=fd32ec5d4f2beb144f2b3d350b659ce4', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/tghw1fuzbn?key=fd32ec5d4f2beb144f2b3d350b659ce4', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/tghw1fuzbn?key=fd32ec5d4f2beb144f2b3d350b659ce4', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/tghw1fuzbn?key=fd32ec5d4f2beb144f2b3d350b659ce4', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="category">
+            <h2 class="category-title"><i class="fas fa-film"></i>Hollywood - New List</h2>
+            <!-- Additional Hollywood content would go here -->
+                        <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://via.placeholder.com/300x450/0F0F0F/D4AF37?text=The+One+Man" alt="The One Man">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">The One Man</h3>
+                    <p class="movie-info">2025 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-top-5-star" name="home-top-rating" value="5">
+                            <label for="home-top-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-4-star" name="home-top-rating" value="4">
+                            <label for="home-top-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-3-star" name="home-top-rating" value="3">
+                            <label for="home-top-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-2-star" name="home-top-rating" value="2">
+                            <label for="home-top-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-1-star" name="home-top-rating" value="1">
+                            <label for="home-top-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/tghw1fuzbn?key=fd32ec5d4f2beb144f2b3d350b659ce4', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/tghw1fuzbn?key=fd32ec5d4f2beb144f2b3d350b659ce4', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/tghw1fuzbn?key=fd32ec5d4f2beb144f2b3d350b659ce4', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/tghw1fuzbn?key=fd32ec5d4f2beb144f2b3d350b659ce4', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://via.placeholder.com/300x450/0F0F0F/D4AF37?text=Golden+Eye" alt="Golden Eye">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">Golden Eye</h3>
+                    <p class="movie-info">2024 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-top2-5-star" name="home-top2-rating" value="5">
+                            <label for="home-top2-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-4-star" name="home-top2-rating" value="4">
+                            <label for="home-top2-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-3-star" name="home-top2-rating" value="3">
+                            <label for="home-top2-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-2-star" name="home-top2-rating" value="2">
+                            <label for="home-top2-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-1-star" name="home-top2-rating" value="1">
+                            <label for="home-top2-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/tghw1fuzbn?key=fd32ec5d4f2beb144f2b3d350b659ce4', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/tghw1fuzbn?key=fd32ec5d4f2beb144f2b3d350b659ce4', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/tghw1fuzbn?key=fd32ec5d4f2beb144f2b3d350b659ce4', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/tghw1fuzbn?key=fd32ec5d4f2beb144f2b3d350b659ce4', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="category">
+            <h2 class="category-title"><i class="fas fa-film"></i>Hollywood - Old List</h2>
+            <!-- Additional Hollywood content would go here -->
+                        <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://via.placeholder.com/300x450/0F0F0F/D4AF37?text=The+One+Man" alt="The One Man">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">The One Man</h3>
+                    <p class="movie-info">2025 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-top-5-star" name="home-top-rating" value="5">
+                            <label for="home-top-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-4-star" name="home-top-rating" value="4">
+                            <label for="home-top-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-3-star" name="home-top-rating" value="3">
+                            <label for="home-top-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-2-star" name="home-top-rating" value="2">
+                            <label for="home-top-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-1-star" name="home-top-rating" value="1">
+                            <label for="home-top-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/tghw1fuzbn?key=fd32ec5d4f2beb144f2b3d350b659ce4', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/tghw1fuzbn?key=fd32ec5d4f2beb144f2b3d350b659ce4', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/tghw1fuzbn?key=fd32ec5d4f2beb144f2b3d350b659ce4', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/tghw1fuzbn?key=fd32ec5d4f2beb144f2b3d350b659ce4', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://via.placeholder.com/300x450/0F0F0F/D4AF37?text=Golden+Eye" alt="Golden Eye">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">Golden Eye</h3>
+                    <p class="movie-info">2024 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-top2-5-star" name="home-top2-rating" value="5">
+                            <label for="home-top2-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-4-star" name="home-top2-rating" value="4">
+                            <label for="home-top2-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-3-star" name="home-top2-rating" value="3">
+                            <label for="home-top2-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-2-star" name="home-top2-rating" value="2">
+                            <label for="home-top2-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-1-star" name="home-top2-rating" value="1">
+                            <label for="home-top2-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/tghw1fuzbn?key=fd32ec5d4f2beb144f2b3d350b659ce4', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/tghw1fuzbn?key=fd32ec5d4f2beb144f2b3d350b659ce4', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/tghw1fuzbn?key=fd32ec5d4f2beb144f2b3d350b659ce4', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/tghw1fuzbn?key=fd32ec5d4f2beb144f2b3d350b659ce4', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="page" id="bollywood">
+        <div class="category">
+            <h2 class="category-title"><i class="fas fa-film"></i>Bollywood - Top List</h2>
+            <!-- Bollywood content would go here, same structure as home page -->
+                        <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://via.placeholder.com/300x450/0F0F0F/D4AF37?text=The+One+Man" alt="The One Man">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">The One Man</h3>
+                    <p class="movie-info">2025 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-top-5-star" name="home-top-rating" value="5">
+                            <label for="home-top-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-4-star" name="home-top-rating" value="4">
+                            <label for="home-top-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-3-star" name="home-top-rating" value="3">
+                            <label for="home-top-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-2-star" name="home-top-rating" value="2">
+                            <label for="home-top-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-1-star" name="home-top-rating" value="1">
+                            <label for="home-top-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/qy1f0hk9by?key=f48d8b9dace12b52f6263b4e78791030', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/qy1f0hk9by?key=f48d8b9dace12b52f6263b4e78791030', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/qy1f0hk9by?key=f48d8b9dace12b52f6263b4e78791030', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/qy1f0hk9by?key=f48d8b9dace12b52f6263b4e78791030', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://via.placeholder.com/300x450/0F0F0F/D4AF37?text=Golden+Eye" alt="Golden Eye">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">Golden Eye</h3>
+                    <p class="movie-info">2024 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-top2-5-star" name="home-top2-rating" value="5">
+                            <label for="home-top2-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-4-star" name="home-top2-rating" value="4">
+                            <label for="home-top2-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-3-star" name="home-top2-rating" value="3">
+                            <label for="home-top2-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-2-star" name="home-top2-rating" value="2">
+                            <label for="home-top2-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-1-star" name="home-top2-rating" value="1">
+                            <label for="home-top2-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/qy1f0hk9by?key=f48d8b9dace12b52f6263b4e78791030', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/qy1f0hk9by?key=f48d8b9dace12b52f6263b4e78791030', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/qy1f0hk9by?key=f48d8b9dace12b52f6263b4e78791030', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/qy1f0hk9by?key=f48d8b9dace12b52f6263b4e78791030', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="category">
+            <h2 class="category-title"><i class="fas fa-film"></i>Bollywood - New List</h2>
+            <!-- Additional Bollywood content would go here -->
+                        <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://via.placeholder.com/300x450/0F0F0F/D4AF37?text=The+One+Man" alt="The One Man">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">The One Man</h3>
+                    <p class="movie-info">2025 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-top-5-star" name="home-top-rating" value="5">
+                            <label for="home-top-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-4-star" name="home-top-rating" value="4">
+                            <label for="home-top-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-3-star" name="home-top-rating" value="3">
+                            <label for="home-top-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-2-star" name="home-top-rating" value="2">
+                            <label for="home-top-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-1-star" name="home-top-rating" value="1">
+                            <label for="home-top-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/qy1f0hk9by?key=f48d8b9dace12b52f6263b4e78791030', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/qy1f0hk9by?key=f48d8b9dace12b52f6263b4e78791030', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/qy1f0hk9by?key=f48d8b9dace12b52f6263b4e78791030', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/qy1f0hk9by?key=f48d8b9dace12b52f6263b4e78791030', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://via.placeholder.com/300x450/0F0F0F/D4AF37?text=Golden+Eye" alt="Golden Eye">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">Golden Eye</h3>
+                    <p class="movie-info">2024 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-top2-5-star" name="home-top2-rating" value="5">
+                            <label for="home-top2-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-4-star" name="home-top2-rating" value="4">
+                            <label for="home-top2-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-3-star" name="home-top2-rating" value="3">
+                            <label for="home-top2-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-2-star" name="home-top2-rating" value="2">
+                            <label for="home-top2-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-1-star" name="home-top2-rating" value="1">
+                            <label for="home-top2-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/qy1f0hk9by?key=f48d8b9dace12b52f6263b4e78791030', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/qy1f0hk9by?key=f48d8b9dace12b52f6263b4e78791030', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/qy1f0hk9by?key=f48d8b9dace12b52f6263b4e78791030', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/qy1f0hk9by?key=f48d8b9dace12b52f6263b4e78791030', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="category">
+            <h2 class="category-title"><i class="fas fa-film"></i>Bollywood - Old List</h2>
+            <!-- Additional Bollywood content would go here -->
+                        <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://via.placeholder.com/300x450/0F0F0F/D4AF37?text=The+One+Man" alt="The One Man">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">The One Man</h3>
+                    <p class="movie-info">2025 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-top-5-star" name="home-top-rating" value="5">
+                            <label for="home-top-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-4-star" name="home-top-rating" value="4">
+                            <label for="home-top-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-3-star" name="home-top-rating" value="3">
+                            <label for="home-top-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-2-star" name="home-top-rating" value="2">
+                            <label for="home-top-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-1-star" name="home-top-rating" value="1">
+                            <label for="home-top-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/qy1f0hk9by?key=f48d8b9dace12b52f6263b4e78791030', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/qy1f0hk9by?key=f48d8b9dace12b52f6263b4e78791030', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/qy1f0hk9by?key=f48d8b9dace12b52f6263b4e78791030', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/qy1f0hk9by?key=f48d8b9dace12b52f6263b4e78791030', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://via.placeholder.com/300x450/0F0F0F/D4AF37?text=Golden+Eye" alt="Golden Eye">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">Golden Eye</h3>
+                    <p class="movie-info">2024 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-top2-5-star" name="home-top2-rating" value="5">
+                            <label for="home-top2-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-4-star" name="home-top2-rating" value="4">
+                            <label for="home-top2-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-3-star" name="home-top2-rating" value="3">
+                            <label for="home-top2-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-2-star" name="home-top2-rating" value="2">
+                            <label for="home-top2-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-1-star" name="home-top2-rating" value="1">
+                            <label for="home-top2-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/qy1f0hk9by?key=f48d8b9dace12b52f6263b4e78791030', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/qy1f0hk9by?key=f48d8b9dace12b52f6263b4e78791030', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/qy1f0hk9by?key=f48d8b9dace12b52f6263b4e78791030', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/qy1f0hk9by?key=f48d8b9dace12b52f6263b4e78791030', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="page" id="series">
+        <div class="category">
+            <h2 class="category-title"><i class="fas fa-tv"></i>Series - Top List</h2>
+            <!-- Series content would go here, same structure as home page -->
+                        <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://via.placeholder.com/300x450/0F0F0F/D4AF37?text=The+One+Man" alt="The One Man">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">The One Man</h3>
+                    <p class="movie-info">2025 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-top-5-star" name="home-top-rating" value="5">
+                            <label for="home-top-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-4-star" name="home-top-rating" value="4">
+                            <label for="home-top-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-3-star" name="home-top-rating" value="3">
+                            <label for="home-top-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-2-star" name="home-top-rating" value="2">
+                            <label for="home-top-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-1-star" name="home-top-rating" value="1">
+                            <label for="home-top-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/enszy199?key=02d1b6d3861b3c0778517cf236398951', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/enszy199?key=02d1b6d3861b3c0778517cf236398951', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/enszy199?key=02d1b6d3861b3c0778517cf236398951', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/enszy199?key=02d1b6d3861b3c0778517cf236398951', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://via.placeholder.com/300x450/0F0F0F/D4AF37?text=Golden+Eye" alt="Golden Eye">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">Golden Eye</h3>
+                    <p class="movie-info">2024 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-top2-5-star" name="home-top2-rating" value="5">
+                            <label for="home-top2-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-4-star" name="home-top2-rating" value="4">
+                            <label for="home-top2-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-3-star" name="home-top2-rating" value="3">
+                            <label for="home-top2-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-2-star" name="home-top2-rating" value="2">
+                            <label for="home-top2-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-1-star" name="home-top2-rating" value="1">
+                            <label for="home-top2-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/enszy199?key=02d1b6d3861b3c0778517cf236398951', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/enszy199?key=02d1b6d3861b3c0778517cf236398951', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/enszy199?key=02d1b6d3861b3c0778517cf236398951', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/enszy199?key=02d1b6d3861b3c0778517cf236398951', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+      
+        <div class="category">
+            <h2 class="category-title"><i class="fas fa-tv"></i>Series - New List</h2>
+            <!-- Additional Series content would go here -->
+                        <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://via.placeholder.com/300x450/0F0F0F/D4AF37?text=The+One+Man" alt="The One Man">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">The One Man</h3>
+                    <p class="movie-info">2025 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-top-5-star" name="home-top-rating" value="5">
+                            <label for="home-top-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-4-star" name="home-top-rating" value="4">
+                            <label for="home-top-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-3-star" name="home-top-rating" value="3">
+                            <label for="home-top-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-2-star" name="home-top-rating" value="2">
+                            <label for="home-top-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-1-star" name="home-top-rating" value="1">
+                            <label for="home-top-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/enszy199?key=02d1b6d3861b3c0778517cf236398951', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/enszy199?key=02d1b6d3861b3c0778517cf236398951', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/enszy199?key=02d1b6d3861b3c0778517cf236398951', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/enszy199?key=02d1b6d3861b3c0778517cf236398951', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://via.placeholder.com/300x450/0F0F0F/D4AF37?text=Golden+Eye" alt="Golden Eye">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">Golden Eye</h3>
+                    <p class="movie-info">2024 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-top2-5-star" name="home-top2-rating" value="5">
+                            <label for="home-top2-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-4-star" name="home-top2-rating" value="4">
+                            <label for="home-top2-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-3-star" name="home-top2-rating" value="3">
+                            <label for="home-top2-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-2-star" name="home-top2-rating" value="2">
+                            <label for="home-top2-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-1-star" name="home-top2-rating" value="1">
+                            <label for="home-top2-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/enszy199?key=02d1b6d3861b3c0778517cf236398951', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/enszy199?key=02d1b6d3861b3c0778517cf236398951', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/enszy199?key=02d1b6d3861b3c0778517cf236398951', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/enszy199?key=02d1b6d3861b3c0778517cf236398951', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="category">
+            <h2 class="category-title"><i class="fas fa-tv"></i>Series - Old List</h2>
+            <!-- Additional Series content would go here -->
+                        <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://via.placeholder.com/300x450/0F0F0F/D4AF37?text=The+One+Man" alt="The One Man">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">The One Man</h3>
+                    <p class="movie-info">2025 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-top-5-star" name="home-top-rating" value="5">
+                            <label for="home-top-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-4-star" name="home-top-rating" value="4">
+                            <label for="home-top-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-3-star" name="home-top-rating" value="3">
+                            <label for="home-top-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-2-star" name="home-top-rating" value="2">
+                            <label for="home-top-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-1-star" name="home-top-rating" value="1">
+                            <label for="home-top-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/enszy199?key=02d1b6d3861b3c0778517cf236398951', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/enszy199?key=02d1b6d3861b3c0778517cf236398951', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/enszy199?key=02d1b6d3861b3c0778517cf236398951', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/enszy199?key=02d1b6d3861b3c0778517cf236398951', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://via.placeholder.com/300x450/0F0F0F/D4AF37?text=Golden+Eye" alt="Golden Eye">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">Golden Eye</h3>
+                    <p class="movie-info">2024 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-top2-5-star" name="home-top2-rating" value="5">
+                            <label for="home-top2-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-4-star" name="home-top2-rating" value="4">
+                            <label for="home-top2-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-3-star" name="home-top2-rating" value="3">
+                            <label for="home-top2-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-2-star" name="home-top2-rating" value="2">
+                            <label for="home-top2-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-1-star" name="home-top2-rating" value="1">
+                            <label for="home-top2-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/enszy199?key=02d1b6d3861b3c0778517cf236398951', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/enszy199?key=02d1b6d3861b3c0778517cf236398951', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/enszy199?key=02d1b6d3861b3c0778517cf236398951', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/enszy199?key=02d1b6d3861b3c0778517cf236398951', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="page" id="adult">
+        <div class="category">
+            <h2 class="category-title"><i class="fas fa-tv"></i>Adult - Top List</h2>
+            <!-- Series content would go here, same structure as home page -->
+                        <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://via.placeholder.com/300x450/0F0F0F/D4AF37?text=The+One+Man" alt="The One Man">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">The One Man</h3>
+                    <p class="movie-info">2025 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-top-5-star" name="home-top-rating" value="5">
+                            <label for="home-top-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-4-star" name="home-top-rating" value="4">
+                            <label for="home-top-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-3-star" name="home-top-rating" value="3">
+                            <label for="home-top-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-2-star" name="home-top-rating" value="2">
+                            <label for="home-top-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-1-star" name="home-top-rating" value="1">
+                            <label for="home-top-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://via.placeholder.com/300x450/0F0F0F/D4AF37?text=Golden+Eye" alt="Golden Eye">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">Golden Eye</h3>
+                    <p class="movie-info">2024 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-top2-5-star" name="home-top2-rating" value="5">
+                            <label for="home-top2-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-4-star" name="home-top2-rating" value="4">
+                            <label for="home-top2-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-3-star" name="home-top2-rating" value="3">
+                            <label for="home-top2-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-2-star" name="home-top2-rating" value="2">
+                            <label for="home-top2-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-1-star" name="home-top2-rating" value="1">
+                            <label for="home-top2-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="category">
+            <h2 class="category-title"><i class="fas fa-tv"></i>Adult - New List</h2>
+            <!-- Additional Series content would go here -->
+                        <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://via.placeholder.com/300x450/0F0F0F/D4AF37?text=The+One+Man" alt="The One Man">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">The One Man</h3>
+                    <p class="movie-info">2025 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-top-5-star" name="home-top-rating" value="5">
+                            <label for="home-top-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-4-star" name="home-top-rating" value="4">
+                            <label for="home-top-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-3-star" name="home-top-rating" value="3">
+                            <label for="home-top-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-2-star" name="home-top-rating" value="2">
+                            <label for="home-top-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-1-star" name="home-top-rating" value="1">
+                            <label for="home-top-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://via.placeholder.com/300x450/0F0F0F/D4AF37?text=Golden+Eye" alt="Golden Eye">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">Golden Eye</h3>
+                    <p class="movie-info">2024 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-top2-5-star" name="home-top2-rating" value="5">
+                            <label for="home-top2-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-4-star" name="home-top2-rating" value="4">
+                            <label for="home-top2-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-3-star" name="home-top2-rating" value="3">
+                            <label for="home-top2-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-2-star" name="home-top2-rating" value="2">
+                            <label for="home-top2-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-1-star" name="home-top2-rating" value="1">
+                            <label for="home-top2-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="category">
+            <h2 class="category-title"><i class="fas fa-tv"></i>Adult - Old List</h2>
+            <!-- Additional Series content would go here -->
+                        <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://via.placeholder.com/300x450/0F0F0F/D4AF37?text=The+One+Man" alt="The One Man">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">The One Man</h3>
+                    <p class="movie-info">2025 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-top-5-star" name="home-top-rating" value="5">
+                            <label for="home-top-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-4-star" name="home-top-rating" value="4">
+                            <label for="home-top-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-3-star" name="home-top-rating" value="3">
+                            <label for="home-top-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-2-star" name="home-top-rating" value="2">
+                            <label for="home-top-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top-1-star" name="home-top-rating" value="1">
+                            <label for="home-top-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="movie-box">
+                <div class="movie-image">
+                    <img src="https://via.placeholder.com/300x450/0F0F0F/D4AF37?text=Golden+Eye" alt="Golden Eye">
+                </div>
+                <div class="movie-content">
+                    <h3 class="movie-title">Golden Eye</h3>
+                    <p class="movie-info">2024 Publish Movie</p>
+                    <p class="movie-info">Free Download and Watch Now</p>
+                    <div class="rating">
+                        <div class="star-rating">
+                            <input type="radio" id="home-top2-5-star" name="home-top2-rating" value="5">
+                            <label for="home-top2-5-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-4-star" name="home-top2-rating" value="4">
+                            <label for="home-top2-4-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-3-star" name="home-top2-rating" value="3">
+                            <label for="home-top2-3-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-2-star" name="home-top2-rating" value="2">
+                            <label for="home-top2-2-star"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="home-top2-1-star" name="home-top2-rating" value="1">
+                            <label for="home-top2-1-star"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                    <div class="download-buttons">
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-play"></i> Watch Now</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 720p</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 2k</button>
+                        <button class="btn" onclick="window.open('https://www.revenuecpmgate.com/x2sbq3q2h?key=98c3e3db988ab5f0bff2740ed1b29379', '_blank')"><i class="fas fa-download"></i> Download 4k</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Social Icons -->
+    <div class="social-icons">
+        <a href="https://youtube.com/@gold_flix?si=S-bzVQpEFbuyPp2T" target="_blank" class="social-icon">
+            <i class="fab fa-youtube"></i>
+        </a>
+        <a href="https://t.me/viralpaybdsupport" target="_blank" class="social-icon">
+            <i class="fab fa-telegram"></i>
+        </a>
+    </div>
+    
+    <!-- Bottom Navigation -->
+    <div class="nav-bottom">
+        <div class="nav-item active" onclick="showPage('home')">
+            <i class="fas fa-home"></i>
+            <span>HOME</span>
+        </div>
+        <div class="nav-item" onclick="showPage('hollywood')">
+            <i class="fas fa-globe-americas"></i>
+            <span>Hollywood</span>
+        </div>
+        <div class="nav-item" onclick="showPage('bollywood')">
+            <i class="fas fa-bolt"></i>
+            <span>Bollywood</span>
+        </div>
+        <div class="nav-item" onclick="showPage('series')">
+            <i class="fas fa-tv"></i>
+            <span>Series</span>
+        </div>
+        <div class="nav-item" onclick="showPage('adult')">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Adult</span>
+        </div>
+    </div>
+    
+    <script>
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show the selected page
+            document.getElementById(pageId).classList.add('active');
+            
+            // Update active nav item
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Find the clicked nav item and make it active
+            event.currentTarget.classList.add('active');
+        }
+        
+        // Add hover effects to all buttons
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('mouseover', function() {
+                this.style.transform = 'translateY(-3px)';
+                this.style.boxShadow = '0 5px 15px rgba(255, 215, 0, 0.4)';
+            });
+            
+            btn.addEventListener('mouseout', function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
