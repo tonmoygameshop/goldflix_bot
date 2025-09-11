@@ -31,32 +31,56 @@
             overflow-x: hidden;
         }
         
-        .header {
-            background: linear-gradient(to bottom, rgba(0,0,0,0.9), rgba(0,0,0,0.5));
-            padding: 15px 20px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid var(--gold-primary);
-        }
-        
-        .logo {
-            font-family: 'Playfair Display', serif;
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--gold-primary);
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-            display: flex;
-            align-items: center;
-        }
+.header {
+    background: linear-gradient(to bottom, rgba(0,0,0,0.9), rgba(0,0,0,0.5));
+    padding: 15px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: center; /* <-- এখানে center করা হয়েছে */
+    align-items: center;
+    border-bottom: 2px solid var(--gold-primary);
+}
+
+.logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--gold-primary);
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center; /* <-- লোগোও মাঝখানে থাকবে */
+}
         
         .logo i {
             margin-right: 10px;
             animation: glow 2s infinite alternate;
         }
+
+.search-container {
+    width: 100%;
+    padding: 15px;
+    text-align: center;
+    background: var(--dark-card);
+    border-bottom: 2px solid var(--gold-primary);
+    position: sticky;
+    top: 60px; /* হেডারের নিচে বসানোর জন্য */
+    z-index: 99;
+}
+
+#searchInput {
+    width: 90%;
+    max-width: 600px;
+    padding: 12px 15px;
+    font-size: 16px;
+    border-radius: 25px;
+    border: 2px solid var(--gold-primary);
+    outline: none;
+    background: #111;
+    color: var(--text-light);
+}
         
         .nav-bottom {
             position: fixed;
@@ -329,13 +353,18 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <div class="header">
-        <div class="logo">
-            <i class="fas fa-crown"></i>
-            GOLDFLIX
-        </div>
+
+   <div class="header">
+    <div class="logo">
+        <i class="fas fa-crown"></i>
+        GOLDFLIX
     </div>
+</div> 
+    
+<!-- Search Bar -->
+<div class="search-container">
+    <input type="text" id="searchInput" placeholder="Search movies..." onkeyup="searchMovies()">
+</div>
     
     <!-- Pages -->
     <div class="page active" id="home">
@@ -1618,6 +1647,21 @@
     </div>
     
     <script>
+
+        function searchMovies() {
+    let input = document.getElementById('searchInput').value.toLowerCase();
+    let movies = document.querySelectorAll('.movie-box');
+    
+    movies.forEach(movie => {
+        let title = movie.querySelector('.movie-title').innerText.toLowerCase();
+        if (title.includes(input)) {
+            movie.style.display = "flex"; // মিললে দেখাবে
+        } else {
+            movie.style.display = "none"; // না মিললে লুকাবে
+        }
+    });
+}
+        
         function showPage(pageId) {
             // Hide all pages
             document.querySelectorAll('.page').forEach(page => {
